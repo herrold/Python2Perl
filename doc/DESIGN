@@ -1,0 +1,4 @@
+DESIGN
+------
+Given that this project relates to translation between two languages we
+do not need to parse past an abstract grammar of the python language.
