@@ -1,8 +1,16 @@
 #!/usr/bin/env python
+# Benjamin James Wright (bwright@cse.unsw.edu.au)
+# 2012.04.21 (ISO 8601)
+
 
 import argparse
+from translator import Subset0
 
 class PyPerl:
+    '''
+    PyPerl is the core class of the translator. It parses the command line
+    arguments and delegates 
+    '''
     '''Parse command line arguments, and translates python to perl.'''
     def __init__(self, cmd_arguments):
         self.parse_cmd(cmd_arguments)
