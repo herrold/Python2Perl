@@ -7,3 +7,5 @@ from subset2 import Subset2
 from subset3 import Subset3
 from subset4 import Subset4 
 from subset5 import Subset5
+
+subsets = [Subset0, Subset1, Subset2, Subset3, Subset4, Subset5]

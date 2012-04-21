@@ -3,7 +3,7 @@
 # 2012.04.18 (ISO 8601)
 
 from translator import Translator
-from grammar import PrintStmt, StrExpr
+from grammar import CallExpr, StrExpr
 
 class Subset0(Translator):
     '''
@@ -12,22 +12,14 @@ class Subset0(Translator):
     * Print:  ADSL => Print
     * String: ADSL => Str
     '''
-
     def visit_Print(self, node):
         '''Python to Perl rewrite rules for print.'''
         arguments = [self.visit(value) for value in values]
-        grammar.PrintStmt(arguments)
-        
-        # print "print",
-        #for value in node.values:
-        #    self.visit(value)
-        #    print ",",
-        # print '"\\n";'
+        print(grammar.CallExpr(name='print', args=arguments, row=node.lineno))
 
     def visit_Str(self, node):
         '''Python to Perl rewrite rules for str.'''
-        return grammar.StrExpr(node.s)
-        # print '"%s"' % node.s,
+        return grammar.StrExpr(s=node.s)
 
 if __name__ == '__main__':
     pass
