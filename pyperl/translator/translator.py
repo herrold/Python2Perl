@@ -5,6 +5,7 @@
 # each requirement as a sub-tree. (>^_^)> CAN HAZ MARKS?
 
 import ast
+from grammar import CommentStmt
 
 class Translator(ast.NodeVisitor):
     '''
@@ -14,18 +15,17 @@ class Translator(ast.NodeVisitor):
     functions, adding more rewrite rules. The goal is to introduce a cascading
     system that adds functionality for each subset and expands as it goes along.
     '''
-    def __init__(self):
-        print '#!/usr/bin/perl -w'
+    def __init__(self, debug=False):
+        # Sets the debugging information.
+        self.debug = debug
+    
+    def translate(self, input_path):
+        '''Preforms the translation on the python source code.'''
+        self.buffer = [CommentStmt(value='!/usr/bin/perl -w', row=0)]
+        python_source = open(input_path, 'rU').read()
+        tree = ast.parse(python_source)
+        self.visit(tree)
+        return ''
     def generic_visit(self, node):
        #print(type(node).__name__)
        ast.NodeVisitor.generic_visit(self, node)
-
-if __name__ == '__main__':
-    translator = Translator()
-    source = '''
-#!/usr/bin/python
-answer = ''.join([1, 2, 3])
-print answer
-'''
-    tree = ast.parse(source)
-    parser.visit(tree)

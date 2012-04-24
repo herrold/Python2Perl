@@ -3,7 +3,7 @@
 # 2012.04.21 (ISO 8601)
 
 import argparse
-# from translator import subsets
+from translator import subsets
 
 class PyPerl:
     '''
@@ -28,19 +28,19 @@ class PyPerl:
         # Ensure that the subset is within a valid range.
         if self.cmd_args.subset not in range(6):
             self.cmd_args.subset = 5
-        print(self.cmd_args)
     
     def translate(self):
         '''Translates the python source code into perl.'''
         try:
             # Select the appropriate translator.
-            subset_translator = translator.subsets[self.cmd_args.subset]
-            # Provide the translator with the required information.
-            perl_source = subset_translator(self.cmd_args.input, self.cmd_args.debug)
+            subset_translator = subsets[self.cmd_args.subset]
+            translator = subset_translator(self.cmd_args.debug)
+            # Preform the translation
+            perl_source = translator.translate(self.cmd_args.input)
             # Open the output file and write the perl source code.
-            with open(self.output, 'w') as f:
+            with open(self.cmd_args.output, 'w') as f:
                 f.write(perl_source)
-        except IOException:
+        except IOError:
             # Output a message if there is an exception.
             print("The inputted files couldn't be found and / or accessed.")
 
