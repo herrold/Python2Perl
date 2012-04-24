@@ -8,7 +8,6 @@ from grammar import AssignStmt, NameExpr, NumExpr, Operator, BinaryOperator
 class Subset1(Subset0):
     '''This implements all the features required in subset 1'''
     def visit_Assign(self, node):
-        print (node.__dict__)
         # Find all the targets.
         targets = [self.visit(target) for target in node.targets]
         # Find the value for the program.
