@@ -1,3 +1,4 @@
 #!/usr/bin/env python
 
-print "Magic"
+variable = 2 * 2 + 3**2
+print variable

@@ -21,11 +21,18 @@ class Translator(ast.NodeVisitor):
     
     def translate(self, input_path):
         '''Preforms the translation on the python source code.'''
+        # Load the initial data into the buffer.
         self.buffer = [CommentStmt(value='!/usr/bin/perl -w', row=0)]
+        # Load the inputted python source code.
         python_source = open(input_path, 'rU').read()
+        # Convert the python source code into an AST representation.
         tree = ast.parse(python_source)
+        # Visit every node in the tree.
         self.visit(tree)
-        return ''
+        # Converts the grammar buffer into a string representation.
+        perl_source = '\n'.join(map(repr, self.buffer)) 
+        return perl_source
+    
     def generic_visit(self, node):
-       #print(type(node).__name__)
+       print(type(node).__name__)
        ast.NodeVisitor.generic_visit(self, node)
