@@ -15,6 +15,7 @@ class Subset0(Translator):
     def visit_Print(self, node):
         '''Python to Perl rewrite rules for print.'''
         arguments = [self.visit(value) for value in node.values]
+        arguments.append(StrExpr(value=r"\n"))
         self.buffer.append(CallExpr(name='print', args=arguments, row=node.lineno))
 
     def visit_Str(self, node):
