@@ -8,12 +8,9 @@ class StrExpr(Expression):
     '''
     Handles the implementation of a perl basic string.
     '''
-    def __init__(self, row=0, col=0, s=''):
+    def __init__(self, row=0, col=0, value=''):
         super(StrExpr, self).__init__(row=row, col=col)
-        self.s = s
-    def __repr__(self):
-        return '"%s"' % self.s
+        self.value = value
 
-if __name__ == '__main__':
-    node = StrExpr(s=r"\n")
-    print(repr(node))
+    def __repr__(self):
+        return '"%s"' % self.value
