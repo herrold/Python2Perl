@@ -6,7 +6,15 @@ from subset2 import Subset2
 
 class Subset3(Subset2):
     '''
+    Implements the requirements of subset 3.
     '''
-    pass
-if __name__ == '__main__':
-    pass
+    def visit_Call(self, node):
+        '''
+        A call represents any call to  a function. The standard library
+        is quite large and we cannot convert it all so we do it on a case by
+        case basis.
+        '''
+        func = self.visit(node.func)
+        args = [self.visit(arg) for arg in node.args]
+        print func, args
+

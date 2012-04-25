@@ -5,6 +5,7 @@
 # each requirement as a sub-tree. (>^_^)> CAN HAZ MARKS?
 
 import ast
+from collections import defaultdict
 from grammar import CommentStmt, util
 
 class Translator(ast.NodeVisitor):
@@ -18,6 +19,11 @@ class Translator(ast.NodeVisitor):
     def __init__(self, debug=False):
         # Sets the debugging information.
         self.debug = debug
+        # To do more complex conversion you need to maintain the context of
+        # variables within the system to determine their prefix $,@ or %. This
+        # is where that context is stored. The dictionary defaults to no type
+        # represented by a '' string.
+        self.context = defaultdict(str)
     
     def translate(self, input_path):
         '''Preforms the translation on the python source code.'''

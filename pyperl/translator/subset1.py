@@ -3,7 +3,7 @@
 # 2012.04.18 (ISO 8601)
 
 from subset0 import Subset0
-from grammar import AssignStmt, NameExpr, NumExpr, Operator, BinaryOperator
+from grammar import AssignStmt, NameExpr, NumExpr, Operator, UnaryOperator, BinaryOperator, PerlType, Expression, ArrayExpr, HashMapExpr
 
 class Subset1(Subset0):
     '''
@@ -11,11 +11,12 @@ class Subset1(Subset0):
     Specification of Subset 1:
     ADSL => Assign: Universal rewrite for assignments.
     ADSL => Name:   Universal rewrites for identifiers.
+    ADSL => UnaryOp: Universally rewrites all unary operators.
     ADSL => BinOp:  Univeral rewrites for all binary operators.
     ADSL => Add:    Universal rewrites for all add operators.
     ADSL => Sub:    Universal rewrites for all subtraction operators.
-    ADSL => UAdd:   TODO
-    ADSL => USub:   TODO
+    ADSL => UAdd:   Universally rewrites unary addition.
+    ADSL => USub:   Universallsy rewrites unary subtraction
     ADSL => Mult:   Universal rewrites for all division operators.
     ADSL => Div:    Universal rewrites for all divison operators.
     ADSL => Mod:    Univeral rewrite for all modulus operators
@@ -24,13 +25,32 @@ class Subset1(Subset0):
     def visit_Assign(self, node):
         '''
         Collects all the targets for the assigment and the corresponding
-        values and builds a perl assignment statement.
+        values and builds a perl assignment statement. It also updates
+        the global context of the type of the current identifier. An
+        identifier can be changed at multiple points in the program and
+        perl uses a special prefix notation to indicate its "type" so to
+        preserve that we need to maintain context!
         '''
-        # Find all the targets.
-        targets = [self.visit(target) for target in node.targets]
         # Find the value for the program.
         value =  self.visit(node.value)
-        return AssignStmt(prefix='my', target=targets[0], value=value,
+
+        # Find the first target. Note it will have to be parsed twice.
+        target = self.visit(node.targets[0])
+        
+        # Assign the target prefix, based on the value.
+        if isinstance(value, ArrayExpr):
+            self.context[target.name] = PerlType.ARRAY
+        elif isinstance(value, HashMapExpr):
+            self.context[target.name] = PerlType.HASH_MAP
+        elif isinstance(value, NameExpr):
+            self.context[target.name] = self.context[value.name]
+        else:
+            self.context[target.name] = PerlType.SCALAR
+
+        # Refresh the first target now its context has been parsed (>.<)
+        target = self.visit(node.targets[0])
+        
+        return AssignStmt(prefix='my', target=target, value=value,
                           row=node.lineno, col=node.col_offset)
 
     def visit_Name(self, node):
@@ -38,7 +58,21 @@ class Subset1(Subset0):
         Retrieves the node id from the python name and creates a
         perl name expression from it. Note name is contextual (see assign).
         '''
-        return NameExpr(name=node.id, row=node.lineno, col=node.col_offset)
+        # Python has certain reserved names, this handles them as special
+        # cases. Bools do not really exist in perl so numbers are
+        # sort of a defacto replacements (C like).
+        dispatch = { 'True': NumExpr(value=1,
+                                     row=node.lineno, col=node.col_offset),
+                     'False': NumExpr(value=0,
+                                      row=node.lineno, col=node.col_offset)
+                   }
+        # Check if the key is in the dispatch.
+        if node.id in dispatch.keys():
+            return dispatch[node.id]
+        # Else use the global type context (we actually have a context parser)
+        # to assign a valid prefix at this point in the program (>^_^)>
+        return NameExpr(name=node.id, prefix=self.context[node.id],
+                        row=node.lineno, col=node.col_offset)
 
     def visit_Num(self, node):
         '''
@@ -46,7 +80,17 @@ class Subset1(Subset0):
         a perl number expression.
         '''
         return NumExpr(value=node.n, row=node.lineno, col=node.col_offset)
- 
+
+    def visit_UnaryOp(self, node):
+        '''
+        Visits the unary operation and then visits the operand which the
+        action will be applied to. 
+        '''
+        op = self.visit(node.op)
+        operand = self.visit(node.operand)
+        return UnaryOperator(op=op, operand=operand,
+                             row=node.lineno, col=node.col_offset)
+
     def visit_BinOp(self, node):
         '''
         Visits the operator of the binary operation then the left and the
@@ -63,12 +107,24 @@ class Subset1(Subset0):
         return BinaryOperator(op=op, left=left, right=right,
                               row=node.lineno, col=node.col_offset)
 
+    def visit_UAdd(self, node):
+        '''
+        Directly converts the unary operator for addition to perl.
+        '''
+        return Operator(op='+')
+
     def visit_Add(self, node):
         '''
         Directly converts a python add operator to a perl add operator.
         Note these rewrite to exactly the same thing.
         '''
         return Operator(op='+')
+
+    def visit_USub(self, node):
+        '''
+        Directly converts the unary operator for subtraction to perl.
+        '''
+        return Operator(op='-')
 
     def visit_Sub(self, node):
         '''

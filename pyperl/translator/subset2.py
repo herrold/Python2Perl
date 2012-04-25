@@ -3,7 +3,7 @@
 # 2012.04.18 (ISO 8601)
 
 from subset1 import Subset1
-from grammar import ComparisonOperator, Operator, CompareExpr, IfStmt, KeywordStmt
+from grammar import ComparisonOperator, Operator, CompareExpr, IfStmt, WhileStmt, KeywordStmt
 
 class Subset2(Subset1):
     '''Implements subset 2 of the assignment.
@@ -24,29 +24,34 @@ class Subset2(Subset1):
     ADSL => GtE:
     ADSL => Break:
     ADSL => Continue:
-    ADSL => For:
     ADSL => While
     ADSL => If:
     ADSL => Compare:
     '''
-    '''
     def visit_LShift(self, node):
         return Operator(op='<<')
+    
     def visit_RShift(self, node):
         return Operator(op='>>')
+    
     def visit_BitOr(self, node):
         return Operator(op='|')
+    
     def visit_BitXor(self, node):
         return Operator(op='~')
+    
     def visit_BitAnd(self, node):
         return Operator(op='&')
+    
     def visit_Invert(self, node):
         return Operator(op='')
+    
     def visit_And(self, node):
-        return Comparisonperator(op='&&')
+        return ComparisonOperator(op='&&')
+    
     def visit_Or(self, node):
         return ComparisonOperator(op='||')
-    '''
+    
     def visit_Eq(self, node):
         '''
         Translates a python equality comparison operator into a perl equality
@@ -97,10 +102,24 @@ class Subset2(Subset1):
         ''' 
         return KeywordStmt(keyword='continue',
                            row=node.lineno, col=node.col_offset)
-    '''
-    def visit_For(self, node):
     def visit_While(self, node):
-    '''
+        '''
+        A While statment represents a python block that can contain
+        it's own "code block" consisting of children nodes. By visiting
+        test we can construct a CompareExpr and then pass the body to
+        a WhileStmt. A WhileStmt can consist of multiple other blocks
+        as well.
+        '''
+        # Visit the test condition for the while statment.
+        test = self.visit(node.test)
+        # Visit the body of the block.
+        body = [self.visit(element) for element in node.body]
+        # Visit the body of the orelse (potentially another if statement.)
+        orelse = [self.visit(element) for element in node.orelse]
+        # Construct the python while statment.
+        return WhileStmt(test=test, body=body, orelse=orelse,
+                         row=node.lineno, col=node.col_offset)
+
     def visit_If(self, node):
         '''
         An if statment represents a python block that can contain its
@@ -134,3 +153,13 @@ class Subset2(Subset1):
         left = self.visit(node.left)
         # Construct a perl comparison expression from the result.
         return CompareExpr(ops=ops, comparators=comparators, left=left)
+
+    def visit_BoolOp(self, node):
+        '''
+        A boolean operation takes a set of values against some boolean
+        operator and returns either true or false depending on the outcome.
+        '''
+        values = [self.visit(value) for value in node.values]
+        op = self.visit(op)
+
+        print node.__dict__

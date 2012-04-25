@@ -22,7 +22,7 @@ class Subset0(Translator):
         will give you the source code to a perl program.
         '''
         module = [self.visit(grammar) for grammar in node.body]
-        module.sort(key=lambda grammar: grammar.row)
+        # module.sort(key=lambda grammar: grammar.row)
         self.module = self.module + module
 
     def visit_Print(self, node):

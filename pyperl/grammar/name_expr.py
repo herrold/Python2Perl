@@ -6,9 +6,10 @@ from expression import Expression
 
 class NameExpr(Expression):
     '''Handles all basic numeric expression.'''
-    def __init__(self, row=0, col=0, name=None):
+    def __init__(self, row=0, col=0, name=None, prefix=''):
         super(NameExpr, self).__init__(row=row, col=col)
-        self.name = name    
+        self.name = name
+        self.prefix = prefix
 
     def __repr__(self):
-        return "$%s" % self.name
+        return "%s%s" % (self.prefix, self.name)
