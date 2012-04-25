@@ -5,10 +5,8 @@
 from expression import Expression
 
 class StrExpr(Expression):
-    '''
-    Handles the implementation of a perl basic string.
-    '''
-    def __init__(self, row=0, col=0, value=''):
+    '''Handles all basic numeric expression.'''
+    def __init__(self, row=0, col=0, value=None):
         super(StrExpr, self).__init__(row=row, col=col)
         self.value = value
 

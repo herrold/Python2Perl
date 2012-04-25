@@ -12,19 +12,21 @@ class Subset1(Subset0):
         targets = [self.visit(target) for target in node.targets]
         # Find the value for the program.
         value =  self.visit(node.value)
-        self.buffer.append(AssignStmt(target=targets[0],value=value))
+        return AssignStmt(prefix='my', target=targets[0], value=value,
+                          row=node.lineno, col=node.col_offset)
 
     def visit_Name(self, node):
-        return NameExpr(name=node.id)
+        return NameExpr(name=node.id, row=node.lineno, col=node.col_offset)
 
     def visit_Num(self, node):
-        return NumExpr(value=node.n)
+        return NumExpr(value=node.n, row=node.lineno, col=node.col_offset)
  
     def visit_BinOp(self, node):
         op = self.visit(node.op)
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return BinaryOperator(op=op, left=left, right=right)
+        return BinaryOperator(op=op, left=left, right=right, row=node.lineno,
+                              col=node.col_offset)
 
     def visit_Add(self, node):
         return Operator(op='+')

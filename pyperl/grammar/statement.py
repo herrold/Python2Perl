@@ -17,4 +17,4 @@ class Statement(PerlNode):
         self.sep = sep
         self.args = args
         self.row = row
-        self.col = col  
+        self.col = col + len(prefix) 
