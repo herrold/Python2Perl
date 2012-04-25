@@ -9,9 +9,11 @@ class Subset0(Translator):
     '''
     Handles all the rewrite rules that relate to subset 0 of the assignment.
     Definition of Subset 0:
-    * Print:  ADSL => Print
-    * String: ADSL => Str
+    * Module: ADSL => Module -- Deals with the global scope.
+    * Print:  ADSL => Print  -- Deals with print statements universally.
+    * String: ADSL => Str    -- Deals with string literals universally.
     '''
+
     def visit_Module(self, node):
         '''
         For the purposes of this translator the module is the "global" scope
@@ -19,10 +21,10 @@ class Subset0(Translator):
         constructed buffer or perl abstract syntax tree. DFSing this tree
         will give you the source code to a perl program.
         '''
+        module = [self.visit(grammar) for grammar in node.body]
+        module.sort(key=lambda grammar: grammar.row)
+        self.module = self.module + module
 
-        statements = [self.visit(grammar) for grammar in node.body]
-        statements.sort(key=lambda grammar: grammar.row)
-        self.buffer = statements
     def visit_Print(self, node):
         '''Python to Perl rewrite rules for print.'''
         arguments = [self.visit(value) for value in node.values]

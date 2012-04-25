@@ -15,6 +15,7 @@ from statement import Statement
 from comment_stmt import CommentStmt
 from assign_stmt import AssignStmt
 from control_flow_stmt import ControlFlowStmt
+from keyword_stmt import KeywordStmt
 from if_stmt import IfStmt
 
 from operator import Operator

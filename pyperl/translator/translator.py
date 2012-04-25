@@ -5,7 +5,7 @@
 # each requirement as a sub-tree. (>^_^)> CAN HAZ MARKS?
 
 import ast
-from grammar import CommentStmt
+from grammar import CommentStmt, util
 
 class Translator(ast.NodeVisitor):
     '''
@@ -22,7 +22,7 @@ class Translator(ast.NodeVisitor):
     def translate(self, input_path):
         '''Preforms the translation on the python source code.'''
         # Load the initial data into the buffer.
-        self.buffer = [CommentStmt(value='!/usr/bin/perl -w', row=0)]
+        self.module = [CommentStmt(value='!/usr/bin/perl -w')]
         # Load the inputted python source code.
         python_source = open(input_path, 'rU').read()
         # Convert the python source code into an AST representation.
@@ -30,7 +30,7 @@ class Translator(ast.NodeVisitor):
         # Visit every node in the tree.
         self.visit(tree)
         # Converts the grammar buffer into a string representation.
-        perl_source = '\n'.join(map(repr, self.buffer)) 
+        perl_source = '\n'.join(map(repr, self.module)) 
         return perl_source
     
     def generic_visit(self, node):
