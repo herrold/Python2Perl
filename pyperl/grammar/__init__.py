@@ -13,6 +13,8 @@ from name_expr import NameExpr
 from compare_expr import CompareExpr
 from array_expr import ArrayExpr
 from hash_map_expr import HashMapExpr
+from subscript_expr import SubscriptExpr
+from attribute_expr import AttributeExpr
 
 from statement import Statement
 from comment_stmt import CommentStmt
@@ -21,6 +23,8 @@ from control_flow_stmt import ControlFlowStmt
 from keyword_stmt import KeywordStmt
 from if_stmt import IfStmt
 from while_stmt import WhileStmt
+from function_def_stmt import FunctionDefStmt
+from return_stmt import ReturnStmt
 
 from operator import Operator
 from comparison_operator import ComparisonOperator

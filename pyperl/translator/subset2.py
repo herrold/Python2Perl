@@ -161,5 +161,3 @@ class Subset2(Subset1):
         '''
         values = [self.visit(value) for value in node.values]
         op = self.visit(op)
-
-        print node.__dict__

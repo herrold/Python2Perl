@@ -11,8 +11,8 @@ class CallExpr(Expression):
     call, open(), print() are some examples of expressions that would relate
     to this.
     '''
-    def __init__(self, name='', args=[], suffix=';', row=0, col=0):
-        super(CallExpr, self).__init__(row=row, col=col)
+    def __init__(self, name='', args=[], suffix=';', row=0, col=0, perl_type=''):
+        super(CallExpr, self).__init__(row=row, col=col, perl_type=perl_type)
         self.name = name
         self.args = args
         self.suffix = suffix
@@ -22,9 +22,10 @@ class CallExpr(Expression):
     def __repr__(self):
         # Generate the block for the representation.
         params = self.block.next()
-        for arg in self.args[:-1]:
-                params += repr(arg) + self.sep.next() + ' '
-        params += repr(self.args[-1])
+        if self.args:
+            for arg in self.args[:-1]:
+                    params += repr(arg) + self.sep.next() + ' '
+            params += repr(self.args[-1])
         params += self.block.next()
         # Create the final representation
         rep = ' ' * self.col + self.name + params + self.suffix

@@ -3,7 +3,7 @@
 # 2012.04.18 (ISO 8601)
 
 from subset0 import Subset0
-from grammar import AssignStmt, NameExpr, NumExpr, Operator, UnaryOperator, BinaryOperator, PerlType, Expression, ArrayExpr, HashMapExpr
+from grammar import AssignStmt, NameExpr, NumExpr, Operator, UnaryOperator, BinaryOperator, PerlType, Expression, ArrayExpr, HashMapExpr, CallExpr
 
 class Subset1(Subset0):
     '''
@@ -38,20 +38,40 @@ class Subset1(Subset0):
         target = self.visit(node.targets[0])
         
         # Assign the target prefix, based on the value.
-        if isinstance(value, ArrayExpr):
-            self.context[target.name] = PerlType.ARRAY
-        elif isinstance(value, HashMapExpr):
-            self.context[target.name] = PerlType.HASH_MAP
-        elif isinstance(value, NameExpr):
+        if isinstance(value, NameExpr):
             self.context[target.name] = self.context[value.name]
+        elif isinstance(value, Expression) and value.perl_type:
+            self.context[target.name] = value.perl_type
         else:
             self.context[target.name] = PerlType.SCALAR
+
+        # Special case for open
+        if isinstance(value, CallExpr) and value.name == 'open':
+            self.context[target.name] = PerlType.SCALAR
+            target.prefix = 'my ' + self.context[target.name]
+            value.args = [target] + value.args
+            value.suffix = ''' or die "No such file or directory: '%s'";''' % value.args[1].value
+            return value
 
         # Refresh the first target now its context has been parsed (>.<)
         target = self.visit(node.targets[0])
         
-        return AssignStmt(prefix='my', target=target, value=value,
+        # Check if the node has an operator
+        op = Operator(op='')
+        if 'op' in dir(node):
+            op = self.visit(node.op)
+
+        return AssignStmt(prefix='my', target=target, value=value, op=op,
                           row=node.lineno, col=node.col_offset)
+
+    def visit_AugAssign(self, node):
+        '''
+        Implements assignments such as += etc. This was not actually
+        required in the solution. I just wanted to do it.
+        '''
+        # Modify a component.
+        node.targets = [node.target]
+        return self.visit_Assign(node)
 
     def visit_Name(self, node):
         '''

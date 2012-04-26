@@ -14,10 +14,6 @@ class PerlNode(ast.AST):
     I am working with.
     '''
 
-    def __init__(self):
+    def __init__(self, perl_type=''):
         super(PerlNode, self).__init__()
-
-
-if __name__ == '__main__':
-    node = PerlNode()
-    print node.lineno
+        self.perl_type = perl_type

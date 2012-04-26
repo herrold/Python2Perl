@@ -10,6 +10,7 @@ class Expression(PerlNode):
     value. These include most notably basic operations like 4 + 2 or
     even just a string.
     '''
-    def __init__(self, row=0, col=0):
+    def __init__(self, row=0, col=0, perl_type=''):
+        super(Expression, self).__init__(perl_type=perl_type)
         self.row = row
-        self.col = col  
+        self.col = col
