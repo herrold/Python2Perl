@@ -5,6 +5,8 @@ def add(a,b):
     return a + b
 
 test = [[1,2],[3,4]]
+test.pop()
+random = test.pop()
 test = open("magic")
 print test
 

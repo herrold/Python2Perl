@@ -40,5 +40,5 @@ class Translator(ast.NodeVisitor):
         return perl_source
     
     def generic_visit(self, node):
-       print(type(node).__name__)
+       #print(type(node).__name__)
        ast.NodeVisitor.generic_visit(self, node)

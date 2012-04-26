@@ -34,7 +34,7 @@ class ControlFlowStmt(Statement):
         indented_body = [' ' * node.col + repr(node) for node in self.body]
         rep += '\n'.join(indented_body)
         # Close the block
-        rep += self.block.next()
+        rep += ' ' * self.col + self.block.next()
         # Deal with each optional else, or elif
         '''
         for node in self.orelse:

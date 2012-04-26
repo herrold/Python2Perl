@@ -23,10 +23,11 @@ class Subset5(Subset4):
         Parses argument functions.
         '''
         args = [self.visit(arg) for arg in node.args]
-        return args 
+        return args
+
     def visit_Return(self, node):
         '''
         Parses argument returns.
         '''
         value = self.visit(node.value)
-        return value
+        return ReturnStmt(value=value, col=node.col_offset, row=node.lineno)

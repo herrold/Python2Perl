@@ -9,6 +9,15 @@ class Subset4(Subset3):
     '''
     Implemets all that is required from subset 4.
     '''
+    def visit_Expr(self, node):
+        '''
+        Handles all basic expressions.
+        '''
+        value = self.visit(node.value)
+        if 'suffix' in dir(value):
+            value.suffix = ';'
+        return value
+
     def visit_List(self, node):
         '''
         Implements python lists in perl.

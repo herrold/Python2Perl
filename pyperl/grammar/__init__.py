@@ -23,6 +23,7 @@ from control_flow_stmt import ControlFlowStmt
 from keyword_stmt import KeywordStmt
 from if_stmt import IfStmt
 from while_stmt import WhileStmt
+from for_stmt import ForStmt
 from function_def_stmt import FunctionDefStmt
 from return_stmt import ReturnStmt
 

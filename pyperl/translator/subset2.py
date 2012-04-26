@@ -3,7 +3,7 @@
 # 2012.04.18 (ISO 8601)
 
 from subset1 import Subset1
-from grammar import ComparisonOperator, Operator, CompareExpr, IfStmt, WhileStmt, KeywordStmt
+from grammar import ComparisonOperator, Operator, CompareExpr, IfStmt, WhileStmt, ForStmt, KeywordStmt
 
 class Subset2(Subset1):
     '''Implements subset 2 of the assignment.
@@ -102,6 +102,16 @@ class Subset2(Subset1):
         ''' 
         return KeywordStmt(keyword='continue',
                            row=node.lineno, col=node.col_offset)
+    
+    def visit_For(self, node):
+        '''
+        Works with for statments.
+        '''
+        test = self.visit(node.iter)
+        body = [self.visit(element) for element in node.body]
+        return ForStmt(test=test, body=body, orelse=None,
+                       row=node.lineno, col=node.col_offset)
+
     def visit_While(self, node):
         '''
         A While statment represents a python block that can contain
